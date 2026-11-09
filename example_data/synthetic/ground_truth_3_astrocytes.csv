@@ -1,0 +1,12 @@
+measure,value
+nuclei,9
+gfap_positive_cells,5
+gfap_positive_cells_pct,55.56
+gfap_positive_area_pct,1.4235
+gfap_positive_pixels,5152
+endpoints_total,31
+cell1_endpoints,6
+cell2_endpoints,7
+cell3_endpoints,5
+cell4_endpoints,6
+cell5_endpoints,7
