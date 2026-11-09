@@ -29,7 +29,7 @@ Column names start with `GFAP_` in the GFAP app and `IBA1_` in the IBA1 app; the
 | `MARKER_skeleton_network_fragments_rough` | Number of separate skeleton pieces |
 | `MARKER_area_to_skeleton_width_um_rough` | Mask area ÷ skeleton length: a rough mean process thickness |
 
-**Skeleton clean-up (November 2026).** Zhang-Suen thinning leaves extra pixels at bends and "staircase" pixels on diagonal lines. These have 3 neighbours, so they were being counted as branch points, and they added extra length. They are now removed when they are not needed to keep the skeleton connected (Yokoi connectivity number = 1). Endpoints are never removed. See [validation](../validation/VALIDATION.md).
+**Skeleton clean-up.** Zhang-Suen thinning leaves extra pixels at bends and "staircase" pixels on diagonal lines. These have 3 neighbours, so they were being counted as branch points, and they added extra length. They are now removed when they are not needed to keep the skeleton connected (Yokoi connectivity number = 1). Endpoints are never removed. See [validation](../validation/VALIDATION.md).
 
 ## Somas (IBA1 app only, rough)
 Somas are found by **opening** the mask with a disc of radius *Soma opening radius*, which removes thin processes. Holes are then filled, touching somas are split by watershed, and objects outside *min–max soma area* are dropped.
@@ -46,4 +46,3 @@ Somas are found by **opening** the mask with a disc of radius *Soma opening radi
 ## Cautions
 - All skeleton and soma values are **field-level**. Touching cells, 2-D projection of 3-D processes, the threshold, and GFAP-negative fine processes prevent true cell-by-cell reconstruction.
 - Use **one locked threshold** for all images. Skeleton values depend strongly on the threshold.
-- Results from before the November 2026 fix overcounted branch points 3–9× and length by 17–43%, so **do not pool them** with new results.

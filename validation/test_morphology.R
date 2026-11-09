@@ -7,8 +7,8 @@
 #
 # Run from the repository folder in RStudio:
 #   source("validation/test_morphology.R")
-# Optional: also test the pre-fix versions with
-#   TEST_ORIGINAL <- TRUE; source("validation/test_morphology.R")
+# It also shows what plain Zhang-Suen thinning gives WITHOUT the
+# skeleton clean-up step, to show why that step is needed.
 # ================================================================
 
 suppressPackageStartupMessages({
@@ -50,9 +50,16 @@ tests <- data.frame(
 )
 
 apps <- c(GFAP = "apps/GFAP_IF_Quantifier/app.R", IBA1 = "apps/IBA1_IF_Quantifier/app.R")
-if (exists("TEST_ORIGINAL") && isTRUE(TEST_ORIGINAL)) {
-  apps <- c(apps, GFAP_before_fix = "validation/original_apps/GFAP_app_before_fix.R",
-            IBA1_before_fix = "validation/original_apps/IBA1_app_before_fix.R")
+
+# Plain Zhang-Suen skeleton, no clean-up: every pixel with >= 3 neighbours
+# (8-connected groups) is a branch point and every diagonal step is counted.
+without_cleanup <- function(env, mask) {
+  sk <- env$zhang_suen_skeleton(mask)
+  degree <- env$neighbor_degree8(sk)
+  h <- nrow(sk); w <- ncol(sk)
+  len <- sum(sk[, -w] & sk[, -1]) + sum(sk[-h, ] & sk[-1, ]) +
+    sqrt(2) * (sum(sk[-h, -w] & sk[-1, -1]) + sum(sk[-h, -1] & sk[-1, -w]))
+  list(branchpoints = env$count_components8(sk & degree >= 3L), length_px = round(len, 1))
 }
 
 results <- list()
@@ -60,21 +67,24 @@ for (app in names(apps)) {
   env <- load_app_functions(apps[[app]])
   analyze <- if (exists("analyze_iba1_skeleton", env, inherits = FALSE)) env$analyze_iba1_skeleton else env$analyze_gfap_skeleton
   for (i in seq_len(nrow(tests))) {
-    m <- analyze(read_mask(tests$image[i]))$metrics
+    mask <- read_mask(tests$image[i])
+    m <- analyze(mask)$metrics
+    raw <- if (app == "GFAP") without_cleanup(env, mask) else list(branchpoints = NA, length_px = NA)
     get <- function(pattern) m[[grep(pattern, names(m))[1]]]
     results[[length(results) + 1]] <- data.frame(
       app = app, image = basename(tests$image[i]),
       endpoints = get("endpoints_rough$"), true_endpoints = tests$true_endpoints[i],
       branchpoints = get("branchpoints_rough$"), true_branchpoints = tests$true_branchpoints[i],
       length_px = round(get("length_px_rough$"), 1), true_length_px = tests$true_length_px[i],
-      fiji_endpoints = tests$fiji_endpoints[i], fiji_branchpoints = tests$fiji_branchpoints[i])
+      fiji_endpoints = tests$fiji_endpoints[i], fiji_branchpoints = tests$fiji_branchpoints[i],
+      no_cleanup_branchpoints = raw$branchpoints, no_cleanup_length_px = raw$length_px)
   }
 }
 results <- do.call(rbind, results)
 print(results, row.names = FALSE)
 utils::write.csv(results, file.path("validation", "morphology_results.csv"), row.names = FALSE)
 
-exact <- subset(results, !is.na(true_branchpoints) & !grepl("before_fix", app))
+exact <- subset(results, !is.na(true_branchpoints))
 cat(sprintf("\nKnown-answer images: endpoints exact %d/%d, branch points exact %d/%d\n",
             sum(exact$endpoints == exact$true_endpoints), nrow(exact),
             sum(exact$branchpoints == exact$true_branchpoints), nrow(exact)))

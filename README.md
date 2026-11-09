@@ -29,14 +29,14 @@ Full step-by-step instructions with screenshots: **[docs/user_guide.md](docs/use
 One CSV row per image, with area and intensity (primary outcomes), DAPI nuclei, skeleton length, branch points, endpoints, network fragments, and for IBA1, soma count, area and density, and per-soma averages. Column definitions are in **[docs/measurements.md](docs/measurements.md)**.
 
 ## ✅ Validation
-| Test | Result after the Nov 2026 fix |
+| Test | Result |
 |---|---|
 | Images with known answers (shapes, microglia, crossings, noisy) | Endpoints and branch points **exact (8/8)**; length within 1.1% |
 | Dense networks vs. Fiji AnalyzeSkeleton | Branch points 14–15% lower, length 7–8% lower. Endpoints are closer to the true tip counts than Fiji's. |
 | Real Iba1 images vs. hand annotations (CellMorph) | Skeleton within ~1–2 px of hand-traced processes; soma estimates only partly match (rough) |
 | Full app run in a browser | All tabs, batch and ZIP export work; GFAP area and nuclei exact on test image |
 
-Before the fix, branch points were overcounted 3–9× and length by 17–43%. Details and how to re-run: **[validation/VALIDATION.md](validation/VALIDATION.md)**.
+Details and how to re-run: **[validation/VALIDATION.md](validation/VALIDATION.md)**.
 
 ## 📁 Repository structure
 ```
@@ -56,9 +56,7 @@ Before the fix, branch points were overcounted 3–9× and length by 17–43%. D
 ├── validation/
 │   ├── VALIDATION.md             # validation report
 │   ├── test_morphology.R         # re-runs the validation on the app code
-│   ├── dense_fields/             # Fiji comparison images
-│   └── original_apps/            # pre-fix versions, for comparison
-└── CHANGELOG.md
+│   └── dense_fields/             # Fiji comparison images
 ```
 
 ## ⚠️ Notes
