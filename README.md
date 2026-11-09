@@ -65,7 +65,7 @@ Details and how to re-run: **[validation/VALIDATION.md](validation/VALIDATION.md
 - Use animals as biological replicates.
 
 ## 🛠️ Built with
-R · Shiny · EBImage · RBioFormats · DT · ggplot2 · developed with AI-assisted coding
+R · Shiny · EBImage · RBioFormats · DT · ggplot2 · developed with AI-assisted coding (Claude by Anthropic)
 
 ## 📖 Data credit
 Example Iba1 images: Ling, H. (2026). *CellMorph dataset* (v1). Zenodo. https://doi.org/10.5281/zenodo.23585259 (CC BY 4.0).
